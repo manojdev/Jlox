@@ -6,6 +6,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
+
+    private static boolean hadError = false;
+
     public static void main(String[] args) {
         if(args.length>1)
             System.out.println("Usage ::lox file");
@@ -25,6 +28,8 @@ public class Lox {
         }
 
         run(filePath);
+        if(hadError)
+            System.exit(65);
     }
 
     private static void runPrompt() {
@@ -37,6 +42,7 @@ public class Lox {
                 e.printStackTrace();
             }
             run(s);
+            hadError =false;
         }
     }
 
@@ -44,8 +50,13 @@ public class Lox {
         System.out.println("Running "+sourceCode);
 
         Scanner sc = new Scanner(sourceCode);
-        List<Token> tokens = sc.parse();
-        tokens.stream().forEach(System.out::println);
+        List<Token> tokens =sc.scanTokens();
+        sc.tokens.stream().forEach(System.out::println);
 
+    }
+
+    public static void error(int line, String s) {
+        hadError = true;
+        System.out.println("Line "+line+"::"+s);
     }
 }
